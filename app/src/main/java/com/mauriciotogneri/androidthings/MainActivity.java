@@ -9,24 +9,6 @@ import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay;
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat;
 import com.google.android.things.pio.Gpio;
 
-/**
- * Skeleton of the main Android Things activity. Implement your device's logic
- * in this class.
- * <p>
- * Android Things peripheral APIs are accessible through the class
- * PeripheralManagerService. For example, the snippet below will open a GPIO pin and
- * set it to HIGH:
- * <p>
- * <pre>{@code
- * PeripheralManagerService service = new PeripheralManagerService();
- * mLedGpio = service.openGpio("BCM6");
- * mLedGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
- * mLedGpio.setValue(true);
- * }</pre>
- * <p>
- * For more complex peripherals, look for an existing user-space driver, or implement one if none
- * is available.
- */
 public class MainActivity extends Activity
 {
     private Handler handler;
@@ -35,6 +17,9 @@ public class MainActivity extends Activity
     private Gpio ledBlue;
     private AlphanumericDisplay display;
     private Integer currentLed = 0;
+    private Integer currentCharacter = 0;
+
+    private static final String TEXT = "THIS IS A MESSAGE ";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -70,6 +55,8 @@ public class MainActivity extends Activity
     {
         try
         {
+            display.display(text(TEXT));
+
             ledRed.setValue(false);
             ledGreen.setValue(false);
             ledBlue.setValue(false);
@@ -102,5 +89,19 @@ public class MainActivity extends Activity
                 runAndReschedule();
             }
         }, 500);
+    }
+
+    private String text(String input)
+    {
+        String result = input.substring(currentCharacter);
+
+        if (currentCharacter > 0)
+        {
+            result += input.substring(0, currentCharacter - 1);
+        }
+
+        currentCharacter = (currentCharacter + 1) % input.length();
+
+        return result.substring(0, 4);
     }
 }
